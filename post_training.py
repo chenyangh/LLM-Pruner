@@ -30,9 +30,14 @@ def main(args):
     os.environ["WANDB_PROJECT"] = args.wandb_project
 
     # Load Pruned Model
-    pruned_dict = torch.load(args.prune_model, map_location='cpu')
-    tokenizer, model = pruned_dict['tokenizer'], pruned_dict['model']
+    # pruned_dict = torch.load(args.prune_model, map_location='cpu')
+    # tokenizer, model = pruned_dict['tokenizer'], pruned_dict['model']
 
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    model_dir = "Sheared-LLaMA-1.3B-Pruned"  # the folder containing config.json, tokenizer.json, etc.
+    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+    model = AutoModelForCausalLM.from_pretrained(model_dir)
+    
     gradient_accumulation_steps = args.batch_size // args.micro_batch_size
     if not args.no_instruction:
         prompter = Prompter(args.prompt_template_name)
